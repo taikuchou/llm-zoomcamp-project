@@ -1,0 +1,2 @@
+export TOKENIZERS_PARALLELISM=false
+streamlit run rag_client.py

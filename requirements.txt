@@ -1,0 +1,6 @@
+pandas
+tqdm
+openai
+sentence_transformers
+elasticsearch
+streamlit
