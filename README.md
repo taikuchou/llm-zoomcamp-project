@@ -19,6 +19,7 @@ This project leverages Retrieval-Augmented Generation (RAG) to develop a movie c
 ## Retrieval Evaluation
 
 - Implement `hit_rate` & `mrr` to assess the quality of the retrieval operations.
+- Refer to [rag-test.ipynb](./notebooks/rag-test.ipynb)
 
 ## RAG Evaluation
 
