@@ -16,6 +16,7 @@ model = SentenceTransformer(model_name)
 print("embedding.....")
 for doc in tqdm(documents):
     tsg_text = f"{doc['title']} {doc['summary']} {doc['genres'] }"
+    doc['rating'] = int(doc['rating'])/10
     embed = model.encode(tsg_text)
     doc["title_summary_genres_vector"] = embed.tolist()
 
@@ -27,12 +28,13 @@ index_settings = {
     "mappings": {
         "properties": {
             "id": {"type": "keyword"},
+            "imdb_id": {"type": "text"},
             "title": {"type": "text"},
             "summary": {"type": "text"},
             "short_summary": {"type": "text"},
             "genres": {"type": "text"},
             "cast": {"type": "text"},
-            "rating": {"type": "keyword"},
+            "rating": {"type": "double"},
             "title_summary_genres_vector": {
                 "type": "dense_vector",
                 "dims": 768,

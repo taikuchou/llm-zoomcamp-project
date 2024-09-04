@@ -1,12 +1,7 @@
-from openai import OpenAI
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 from elasticsearch import Elasticsearch
-
-client = OpenAI(
-    base_url='http://localhost:11434/v1/',
-    api_key='ollama',
-)
+import ollama
 
 index_name = "movie-questions"
 model_name = "multi-qa-distilbert-cos-v1"
@@ -124,17 +119,22 @@ def build_prompt(query, search_results):
     return prompt
 
 
-def rag(query):
+def rag(query, st):
     search_results = hybrid_search_with_rrf(query)
     prompt = build_prompt(query, search_results)
-    response = client.chat.completions.create(
+    stream = client.chat(
         model='gemma2:2b',
-        messages=[{"role": "user", "content": prompt}],
+        messages=[{'role': 'user', 'content': prompt}],
+        stream=True,
     )
-    answer = response.choices[0].message.content
-    return answer
+    st.markdown("### Here you are:")
+    for chunk in stream:
+        print(chunk['message']['content'], end='', flush=True)
+        yield chunk['message']['content']
 
 
+ollama.pull('gemma2:2b')
+client = ollama.Client(host='http://localhost:11434')
 # Streamlit UI
 st.title("Cinematic Advisory System")
 
@@ -145,8 +145,7 @@ query = st.text_input("Enter your question:")
 # Button to trigger RAG process
 if st.button("Go"):
     if query:
-        answer = rag(query)
-        st.markdown("### Here you are:")
-        st.write(answer)
+        # answer = rag(query, st)
+        st.write_stream(rag(query, st))
     else:
         st.write("Kindly enter a valid question and try again.")
